@@ -5,7 +5,6 @@ import createGallery, {
   showLoader,
 } from './js/render-functions.js';
 import getImagesByQuery from './js/pixabay-api.js';
-import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
@@ -43,7 +42,6 @@ form.addEventListener('submit', event => {
       downloads: img.downloads,
     }));
 
-      createGallery(gallery, items);
-
+    createGallery(gallery, items);
   });
 });
