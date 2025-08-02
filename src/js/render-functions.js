@@ -3,7 +3,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 let lightbox;
 
-const loader = document.querySelector('loader');
+const loader = document.querySelector('.loader');
 
 export function showLoader() {
   if (loader) {
@@ -51,8 +51,8 @@ function createGallery(container, items) {
         <p><strong>Downloads:</strong> ${downloads}</p>
       `;
 
-      link.appendChild(img);
       li.appendChild(link);
+      link.appendChild(img);
       li.appendChild(infoBox);
 
       fragment.appendChild(li);

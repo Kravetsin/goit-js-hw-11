@@ -42,6 +42,7 @@ form.addEventListener('submit', event => {
       downloads: img.downloads,
     }));
 
+    hideLoader();
     createGallery(gallery, items);
   });
 });
