@@ -1,6 +1,8 @@
 'use strict';
 
-import createGallery, {
+import {
+  createGallery,
+  clearGallery,
   hideLoader,
   showLoader,
 } from './js/render-functions.js';
@@ -10,39 +12,45 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('.form');
-const gallery = document.querySelector('.gallery');
+const input = form.elements['search-text'];
 
-form.addEventListener('submit', event => {
-  event.preventDefault();
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const query = input.value.trim();
 
-  const query = form.elements['search-text'].value.trim();
-  if (!query) return;
+  if (!query) {
+    iziToast.warning({
+      title: 'Warning',
+      message: 'Please enter a search term!',
+    });
+    return;
+  }
 
-  gallery.innerHTML = '';
   showLoader();
+  clearGallery();
 
-  getImagesByQuery(query).then(images => {
-    if (!images || images.length === 0) {
-      hideLoader();
+  getImagesByQuery(query)
+    .then(data => {
+      if (data.hits.length === 0) {
+        iziToast.error({
+          title: 'No results',
+          message:
+            'Sorry, there are no images matching your search query. Please try again!',
+        });
+        return;
+      }
+
+      createGallery(data.hits);
+      input.value = '';
+    })
+    .catch(error => {
       iziToast.error({
-        message:
-          'Sorry, there are no images matching your search query. Please try again!',
-        position: 'topRight',
+        title: 'Error',
+        message: 'Something went wrong. Please try again later.',
       });
-      return;
-    }
-
-    const items = images.map(img => ({
-      previewURL: img.webformatURL,
-      largeImageURL: img.largeImageURL,
-      description: img.tags,
-      likes: img.likes,
-      views: img.views,
-      comments: img.comments,
-      downloads: img.downloads,
-    }));
-
-    hideLoader();
-    createGallery(gallery, items);
-  });
+      console.error(error);
+    })
+    .finally(() => {
+      hideLoader();
+    });
 });

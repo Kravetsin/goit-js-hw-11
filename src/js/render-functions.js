@@ -1,9 +1,43 @@
+'use strict';
+
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
-let lightbox;
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 const loader = document.querySelector('.loader');
+
+export function createGallery(images) {
+  const galleryContainer = document.querySelector('.gallery');
+  const markup = images
+    .map(
+      image => `
+    <li class="gallery__item">
+      <a class="gallery__link" href="${image.largeImageURL}">
+        <img class="gallery__image" src="${image.webformatURL}" alt="${image.tags}" />
+      </a>
+      <div class="image__info">
+        <p><strong>Likes:</strong> ${image.likes}</p>
+        <p><strong>Views:</strong> ${image.views}</p>
+        <p><strong>Comments:</strong> ${image.comments}</p>
+        <p><strong>Downloads:</strong> ${image.downloads}</p>
+      </div>
+    </li>
+  `
+    )
+    .join('');
+
+  galleryContainer.insertAdjacentHTML('beforeend', markup);
+  lightbox.refresh();
+}
+
+export function clearGallery() {
+  const galleryContainer = document.querySelector('.gallery');
+  galleryContainer.innerHTML = '';
+}
 
 export function showLoader() {
   if (loader) {
@@ -16,60 +50,3 @@ export function hideLoader() {
     loader.classList.add('hidden');
   }
 }
-
-function createGallery(container, items) {
-  const fragment = document.createDocumentFragment();
-
-  items.forEach(
-    ({
-      previewURL,
-      largeImageURL,
-      description,
-      likes,
-      views,
-      comments,
-      downloads,
-    }) => {
-      const li = document.createElement('li');
-      li.classList.add('gallery__item');
-
-      const link = document.createElement('a');
-      link.classList.add('gallery__link');
-      link.href = largeImageURL;
-
-      const img = document.createElement('img');
-      img.classList.add('gallery__image');
-      img.src = previewURL;
-      img.alt = description;
-
-      const infoBox = document.createElement('div');
-      infoBox.classList.add('image__info');
-      infoBox.innerHTML = `
-        <p><strong>Likes:</strong> ${likes}</p>
-        <p><strong>Views:</strong> ${views}</p>
-        <p><strong>Comments:</strong> ${comments}</p>
-        <p><strong>Downloads:</strong> ${downloads}</p>
-      `;
-
-      li.appendChild(link);
-      link.appendChild(img);
-      li.appendChild(infoBox);
-
-      fragment.appendChild(li);
-    }
-  );
-
-  container.appendChild(fragment);
-
-  if (lightbox) {
-    lightbox.refresh();
-  } else {
-    lightbox = new SimpleLightbox('.gallery a.gallery__link', {
-      captionsData: 'alt',
-      captionDelay: 250,
-      close: true,
-    });
-  }
-}
-
-export default createGallery;

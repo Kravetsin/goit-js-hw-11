@@ -17,7 +17,7 @@ function getImagesByQuery(query) {
   return axios
     .get(URL)
     .then(response => {
-      return response.data.hits;
+      return response.data;
     })
     .catch(error => {
       console.log(error);
